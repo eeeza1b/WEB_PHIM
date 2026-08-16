@@ -12,4 +12,4 @@ RewriteRule ^$ index.php [L,QSA]
 
 # Friendly routes: /home, /browse, /movie?id=1, ...
 # QSA giữ lại query string, ví dụ movie?id=12.
-RewriteRule ^(home|browse|movie|login|register|logout|profile|watchlist|mood)/?$ index.php?page=$1 [L,QSA,NC]
+RewriteRule ^(home|browse|movie|login|register|logout|profile|watchlist|mood)/?$ index.php?page=$1 [L,QSA,NC] 
