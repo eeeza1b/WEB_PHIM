@@ -20,4 +20,4 @@ if (!in_array($page, $allowed_pages, true)) {
 require_once 'includes/header.php';
 require_once "views/{$page}.php";
 require_once 'includes/footer.php';
-?>
+?> 
