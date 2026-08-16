@@ -70,4 +70,4 @@ $isAdmin = $currentUser && ($currentUser['role'] ?? '') === 'admin';
 
     <div id="drawer-overlay" class="drawer-overlay" aria-hidden="true"></div>
     <main>
-        <?php render_flashes(); ?>
+        <?php render_flashes(); ?> 
