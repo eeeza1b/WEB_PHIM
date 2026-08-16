@@ -29,4 +29,4 @@ define('COOKIE_EXPIRY', time() + (86400 * 30));
 function base_url($path = '') {
     return 'http://localhost' . BASE_URL . '/' . ltrim($path, '/');
 }
-?>
+?> 
