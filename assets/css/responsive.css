@@ -1,0 +1,89 @@
+@media (max-width: 900px) {
+    .header-inner { gap: 18px; }
+    .live-search { width: min(245px, 29vw); }
+    .movie-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .movie-detail-layout { grid-template-columns: minmax(190px, 280px) minmax(0, 1fr); gap: 38px; }
+}
+
+@media (max-width: 720px) {
+    .container, .header-inner { width: min(100% - 32px, 1180px); }
+
+    .header-inner { min-height: 65px; gap: 13px; }
+    .brand { font-size: 1.28rem; }
+    .brand::before { margin-right: 5px; }
+
+    .menu-toggle {
+        display: grid; gap: 4px; width: 35px; height: 35px; padding: 8px;
+        color: #fff; background: transparent; border: 1px solid var(--border); border-radius: 7px;
+    }
+    .menu-toggle span { display: block; height: 2px; background: currentColor; border-radius: 2px; }
+
+    .nav-menu {
+        position: fixed; z-index: 60; top: 0; bottom: 0; left: 0; width: min(286px, 82vw);
+        flex-direction: column; align-items: stretch; gap: 0; padding: 82px 20px 24px;
+        background: #111827; border-right: 1px solid var(--border); box-shadow: 20px 0 45px rgba(0,0,0,.35);
+        transform: translateX(-105%); transition: transform .25s ease;
+    }
+    .nav-menu.active { transform: translateX(0); }
+    .nav-menu a { padding: 13px 12px; border-bottom: 1px solid var(--border); font-size: 1rem; }
+    .drawer-overlay { display: block; visibility: hidden; opacity: 0; position: fixed; z-index: 55; inset: 0; background: rgba(0,0,0,.58); transition: .25s; }
+    .drawer-overlay.active { visibility: visible; opacity: 1; }
+
+    .live-search { width: auto; flex: 1; }
+    .live-search input { padding-left: 32px; padding-block: 8px; font-size: .88rem; }
+    .live-search::before { left: 11px; top: 4px; font-size: 1.2rem; }
+    .live-search-dropdown { position: fixed; top: 69px; right: 16px; left: 16px; width: auto; max-height: 55vh; }
+
+    .hero-section { min-height: 460px; }
+    .hero-section::after { background-position: 65% center; opacity: .27; }
+    .hero-content { padding-block: 62px; }
+    .hero-content h1 { font-size: clamp(2.25rem, 10vw, 3.5rem); }
+    .hero-description { font-size: .97rem; max-width: 420px; }
+    .section-block { padding-block: 34px; }
+    .section-heading { align-items: flex-start; gap: 12px; }
+    .section-heading h2 { font-size: 1.48rem; }
+    .mood-panel { padding: 23px 20px; }
+    .mood-icon { display: none; }
+    .mood-chip { padding: 8px 13px; font-size: .88rem; }
+
+    /* Mobile ưu tiên lướt card ngang, vẫn giữ layout lưới ở desktop/tablet. */
+    .movie-grid {
+        display: grid; grid-auto-flow: column; grid-auto-columns: minmax(148px, 43vw);
+        grid-template-columns: none; gap: 14px; overflow-x: auto; overflow-y: hidden;
+        margin-inline: -16px; padding: 2px 16px 13px; scroll-snap-type: x mandatory; scrollbar-width: thin;
+    }
+    .movie-card { scroll-snap-align: start; }
+    .movie-card h3 { font-size: .94rem; }
+    .movie-meta { font-size: .7rem; }
+    .movie-play-icon { display: none; }
+
+    .page-header { padding: 43px 0 29px; }
+    .page-header h1 { font-size: 2.25rem; }
+    .filter-bar { align-items: stretch; gap: 9px; }
+    .filter-bar select { flex: 1; }
+    .movie-count { width: 100%; margin-left: 0; }
+
+    .movie-detail-hero { align-items: start; min-height: 0; padding: 38px 0 52px; }
+    .movie-detail-layout { grid-template-columns: 145px minmax(0, 1fr); gap: 22px; align-items: start; }
+    .detail-poster { border-radius: 10px; }
+    .back-link { grid-column: 1 / -1; margin-bottom: 0; }
+    .detail-content { grid-column: 1 / -1; }
+    .detail-content h1 { font-size: 2.35rem; }
+    .detail-stat-list { font-size: .82rem; }
+    .movie-overview { margin: 20px 0; font-size: .94rem; }
+    .detail-actions .button { flex: 1; }
+    .trailer-modal__dialog { margin-top: 14vh; }
+}
+
+@media (max-width: 420px) {
+    .header-inner { gap: 8px; }
+    .brand { font-size: 1.08rem; }
+    .brand::before { display: none; }
+    .live-search input { min-width: 0; font-size: .8rem; }
+    .live-search input::placeholder { color: transparent; }
+    .hero-actions .button { width: 100%; }
+    .section-heading .text-link { font-size: .85rem; }
+    .movie-grid { grid-auto-columns: minmax(142px, 48vw); }
+    .movie-detail-layout { grid-template-columns: 120px minmax(0, 1fr); }
+    .detail-content h1 { font-size: 2rem; }
+}

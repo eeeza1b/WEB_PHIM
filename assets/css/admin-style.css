@@ -1,0 +1,146 @@
+/* Admin specific styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.admin-stat-grid,
+.admin-chart-grid {
+    display: grid;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.admin-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-stat-number {
+    margin: 8px 0 0;
+    color: #ff7f50;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.admin-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.admin-links a {
+    border-radius: 8px;
+    background: #ff7f50;
+    color: #fff;
+    padding: 10px 14px;
+    text-decoration: none;
+}
+
+.chart-card {
+    min-height: 350px;
+}
+
+.chart-card canvas {
+    max-height: 280px;
+}
+
+.admin-movie-form {
+    display: grid;
+    gap: 16px;
+    max-width: 760px;
+}
+
+.admin-movie-form label {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-movie-form input,
+.admin-movie-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.admin-movie-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.admin-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.admin-movie-form fieldset {
+    border: 1px solid #d9d9d9;
+    border-radius: 10px;
+    margin: 0;
+    padding: 16px;
+}
+
+.admin-movie-form legend {
+    padding: 0 6px;
+    font-weight: 700;
+}
+
+/* Chọn nhiều thể loại: tự co giãn theo chiều rộng màn hình. */
+.genre-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 10px;
+}
+
+.genre-checkbox {
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex !important;
+    gap: 8px !important;
+    padding: 10px;
+    transition: border-color .2s, background-color .2s;
+}
+
+.genre-checkbox:hover,
+.genre-checkbox:has(input:checked) {
+    background: #fff3ee;
+    border-color: #ff7f50;
+}
+
+.genre-checkbox input {
+    accent-color: #ff7f50;
+    width: auto;
+}
+
+.genre-checkbox:focus-within {
+    outline: 3px solid rgba(255, 127, 80, .35);
+    outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+    .admin-stat-grid,
+    .admin-chart-grid,
+    .admin-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-card {
+        min-height: 310px;
+    }
+
+    .genre-checkbox-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

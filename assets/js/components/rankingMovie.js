@@ -1,0 +1,1 @@
+console.log('Ranking Movie Component Loaded');

@@ -1,0 +1,15 @@
+# Apache mod_rewrite phải được bật (XAMPP: LoadModule rewrite_module).
+RewriteEngine On
+RewriteBase /WEB_PHIM/
+
+# Không rewrite file/thư mục vật lý: assets, api, admin, index.php, ...
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# /WEB_PHIM/ -> trang chủ.
+RewriteRule ^$ index.php [L,QSA]
+
+# Friendly routes: /home, /browse, /movie?id=1, ...
+# QSA giữ lại query string, ví dụ movie?id=12.
+RewriteRule ^(home|browse|movie|login|register|logout|profile|watchlist|mood)/?$ index.php?page=$1 [L,QSA,NC]
