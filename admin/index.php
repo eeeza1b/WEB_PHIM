@@ -5,11 +5,6 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 require_admin();
-
-/*
- * Schema hiện tại không có bảng movie_views. Vì vậy biểu đồ đường dùng
- * movies.created_at (số phim được thêm theo tháng), không dùng số liệu giả.
- */
 $movieTotal = (int) (db_select_one('SELECT COUNT(*) AS total FROM movies')['total'] ?? 0);
 $userTotal = (int) (db_select_one('SELECT COUNT(*) AS total FROM users')['total'] ?? 0);
 
@@ -44,6 +39,17 @@ $genreRows = db_select(
 $genreLabels = array_column($genreRows, 'name');
 $genreValues = array_map('intval', array_column($genreRows, 'total'));
 
+$watchlistRows = db_select(
+    'SELECT m.title, COUNT(w.movie_id) AS total
+     FROM watchlist w
+     INNER JOIN movies m ON m.id = w.movie_id
+     GROUP BY m.id, m.title
+     ORDER BY total DESC, m.title ASC
+     LIMIT 5'
+);
+$watchlistLabels = array_column($watchlistRows, 'title');
+$watchlistValues = array_map('intval', array_column($watchlistRows, 'total'));
+
 require_once '../includes/header.php';
 ?>
 <div class="container">
@@ -63,6 +69,7 @@ require_once '../includes/header.php';
     <nav class="admin-links" aria-label="Quản trị">
         <a href="movies.php">Quản lý phim</a>
         <a href="users.php">Quản lý người dùng</a>
+        <a href="genres.php">Quản lý thể loại</a>
     </nav>
 
     <section class="admin-chart-grid">
@@ -74,9 +81,12 @@ require_once '../includes/header.php';
             <h3>Tỷ lệ thể loại phim</h3>
             <canvas id="genres-chart"></canvas>
         </article>
+        <article class="card chart-card" style="grid-column: 1 / -1;">
+            <h3>Top 5 phim được lưu Watchlist nhiều nhất</h3>
+            <canvas id="watchlist-chart"></canvas>
+        </article>
     </section>
 </div>
-
 <!-- CDN chính thức Chart.js, không cần cài npm cho dự án PHP thuần. -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
@@ -85,6 +95,8 @@ require_once '../includes/header.php';
     const monthValues = <?php echo json_encode($monthValues); ?>;
     const genreLabels = <?php echo json_encode($genreLabels, JSON_UNESCAPED_UNICODE); ?>;
     const genreValues = <?php echo json_encode($genreValues); ?>;
+    const watchlistLabels = <?php echo json_encode($watchlistLabels, JSON_UNESCAPED_UNICODE); ?>;
+    const watchlistValues = <?php echo json_encode($watchlistValues); ?>;
 
     new Chart(document.getElementById('movies-by-month-chart'), {
         type: 'line',
@@ -122,6 +134,30 @@ require_once '../includes/header.php';
             plugins: { legend: { position: 'bottom' } }
         }
     });
+
+    new Chart(document.getElementById('watchlist-chart'), {
+        type: 'bar',
+        data: {
+            labels: watchlistLabels,
+            datasets: [{
+                label: 'Số lượt lưu Watchlist',
+                data: watchlistValues,
+                backgroundColor: '#ff7f50',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { beginAtZero: true, ticks: { precision: 0 } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
 })();
 </script>
-<?php require_once '../includes/footer.php'; ?> 
+<?php require_once '../includes/footer.php'; ?>
