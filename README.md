@@ -92,8 +92,8 @@ Dự án được chia module và thực hiện bởi nhóm gồm 3 thành viên
 | STT | Họ và Tên | MSSV | Vai trò |
 |---|---|---|---|
 | 1 | [Nguyễn Gia Huy] | [079206023415] | Core Architecture & Tech Lead + Search Engine & RESTful API |
-| 2 | [Nguyễn Quốc Huy] | [MSSV] | Admin Management & Analytics |
-| 3 | [Nguyễn Tấn Huy] | [MSSV] | User & Social Interaction + UI/UX, Mood Engine, SEO |
+| 2 | [Nguyễn Quốc Huy] | [060206006836] | Admin Management & Analytics |
+| 3 | [Nguyễn Tấn Huy] | [079206018491] | User & Social Interaction + UI/UX, Mood Engine, SEO |
 
 ### 4.2 Chi tiết nhiệm vụ từng thành viên
 
