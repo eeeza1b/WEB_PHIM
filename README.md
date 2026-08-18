@@ -87,67 +87,56 @@ WEB_PHIM/
 ## 4. Phân công nhóm & Quy trình làm việc Git
 
 ### 4.1 Danh sách thành viên
-
-Dự án được chia module và thực hiện bởi nhóm gồm 5 thành viên:
+Dự án được chia module và thực hiện bởi nhóm gồm 3 thành viên:
 
 | STT | Họ và Tên | MSSV | Vai trò |
 |---|---|---|---|
-| 1 | [Nguyễn Gia Huy] | [079206023415] | Core Architecture & Tech Lead |
-| 2 | [Họ tên TV2] | [MSSV] | User Module & Social Interaction |
-| 3 | [Họ tên TV3] | [MSSV] | Admin Management & Analytics |
-| 4 | [Họ tên TV4] | [MSSV] | Search Engine & RESTful API |
-| 5 | [Họ tên TV5] | [MSSV] | UI/UX, Mood Engine, Media & SEO |
+| 1 | [Nguyễn Gia Huy] | [079206023415] | Core Architecture & Tech Lead + Search Engine & RESTful API |
+| 2 | [Nguyễn Quốc Huy] | [MSSV] | Admin Management & Analytics |
+| 3 | [Nguyễn Tấn Huy] | [MSSV] | User & Social Interaction + UI/UX, Mood Engine, SEO |
 
 ### 4.2 Chi tiết nhiệm vụ từng thành viên
 
-**Thành viên 1 (Leader): Core Architecture & Tech Lead**
+**Thành viên 1 (Gia Huy): Core Architecture & Tech Lead + Search Engine & RESTful API**
 - Khởi tạo dự án, thiết kế và bàn giao `database/schema.sql` chuẩn cho cả nhóm.
 - Quản lý bảo mật cốt lõi: PDO Prepared Statements, Bcrypt, CSRF Protection, phân quyền Session (admin/user).
 - Duyệt code (Code Review), giải quyết xung đột (Conflict), merge các nhánh vào `main`.
-- Hỗ trợ TV4 mở rộng `get_movies()`/`count_movies()` trong `includes/functions.php` khi cần.
+- Khám phá (`views/browse.php`): bộ lọc kết hợp Thể loại + Năm phát hành + Điểm đánh giá + Sắp xếp.
+- Tối ưu AJAX: lọc/chuyển trang không reload toàn bộ trang.
+- REST API: mở rộng `api/movies.php`, xây dựng `api/reviews.php` (GET bình luận + rating theo `movie_id`, JSON).
 
-File phụ trách: `config.php`, `includes/`, `.htaccess`, `index.php`, `database/schema.sql`
+File phụ trách: `config.php`, `includes/`, `.htaccess`, `index.php`, `database/schema.sql`, `views/browse.php`, `api/movies.php`, `api/reviews.php`
 
-**Thành viên 2: User Module & Social Interaction**
+---
+
+**Thành viên 2 (Quốc Huy): Admin Management & Analytics**
+- Phân trang Admin (`admin/movies.php`, `admin/users.php`): server-side pagination (`LIMIT`/`OFFSET`).
+- Quản lý Thể loại (`admin/genres.php` — file mới): CRUD đầy đủ Thêm/Sửa/Xóa thể loại. *(đang thực hiện)*
+- Nâng cấp Dashboard (`admin/index.php`): Chart.js đã có sẵn 2 biểu đồ — thêm biểu đồ thứ 3: Top 5 phim được lưu Watchlist nhiều nhất.
+
+File phụ trách: `admin/movies.php` (chỉ thêm phân trang, không sửa logic CRUD gốc), `admin/genres.php` (mới), `admin/index.php`, `admin/users.php`
+
+---
+
+**Thành viên 3 (Tấn Huy): User & Social Interaction + UI/UX, Mood Engine, SEO**
 - Hồ sơ cá nhân (`views/profile.php`): form đổi avatar, validate dữ liệu đầu vào.
 - Bình luận & Đánh giá: thêm cột `rating` (tinyint, 1-10, nullable) vào bảng `comments` có sẵn — không tạo bảng `reviews` mới.
 - Form gửi bình luận kèm rating (`actions/comment_submit.php`).
 - Hiển thị bình luận mới nhất + tính điểm đánh giá trung bình, lưu vào cột mới `movies.user_rating_avg` (không ghi đè cột `rating` gốc từ TMDB).
+- Gợi ý tâm trạng (`views/mood.php`): hiện đã trim còn 2 mood mẫu (`happy`, `sad`) — mở rộng thêm các mood còn lại (Thư giãn, Lãng mạn, Kịch tính...) liên kết nhóm thể loại tương ứng.
+- Responsive mobile/tablet, Toast notification khi thêm Watchlist thành công.
+- Modal Trailer YouTube co giãn chuẩn 16:9, xử lý ảnh placeholder khi poster lỗi.
+- SEO: tạo `robots.txt`, `sitemap.xml`, thêm thẻ Open Graph (`og:title`, `og:description`, `og:image`) vào `includes/header.php`.
 
-File phụ trách: `views/profile.php`, `actions/comment_submit.php`
-File dùng chung (chỉ sửa phần được chỉ định): `views/movie.php` → khối `<section class="comments">`
+File phụ trách: `views/profile.php`, `views/movie.php` (toàn quyền — cả bình luận lẫn trailer modal), `views/mood.php`, `actions/comment_submit.php`, `assets/css/`, `assets/js/`, `robots.txt` (mới), `sitemap.xml` (mới), `includes/header.php` (phần Open Graph)
 
-**Thành viên 3: Admin Management & Analytics**
-- Phân trang Admin (`admin/movies.php`, `admin/users.php`): server-side pagination.
-- Quản lý Thể loại (`admin/genres.php` - file mới): CRUD Thêm/Sửa/Xóa thể loại.
-- Nâng cấp Dashboard (`admin/index.php`): thêm biểu đồ Top 5 phim được Watchlist nhiều nhất (Chart.js đã có sẵn 2 biểu đồ).
-
-File phụ trách: `admin/movies.php` (chỉ thêm phân trang), `admin/genres.php` (mới), `admin/index.php`, `admin/users.php`
-
-**Thành viên 4: Search Engine & RESTful API**
-- Khám phá (`views/browse.php`): bộ lọc kết hợp Thể loại + Năm + Điểm đánh giá + Sắp xếp.
-- Tối ưu AJAX: lọc/chuyển trang không reload toàn trang.
-- REST API: `api/reviews.php` (GET bình luận + rating theo `movie_id`, JSON).
-
-File phụ trách: `views/browse.php`, `api/movies.php`, `api/reviews.php`
-Phối hợp bắt buộc: sửa `includes/functions.php` phải báo trước TV1.
-
-**Thành viên 5: UI/UX, Mood Engine, Media & SEO**
-- Gợi ý tâm trạng (`views/mood.php`): mở rộng thêm mood liên kết nhóm thể loại.
-- Responsive mobile/tablet, Toast notification khi thêm Watchlist.
-- Modal Trailer YouTube 16:9, ảnh placeholder khi poster lỗi.
-- SEO: `robots.txt`, `sitemap.xml`, thẻ Open Graph trong `includes/header.php`.
-
-File phụ trách: `views/mood.php`, `assets/css/`, `assets/js/`, `robots.txt` (mới), `sitemap.xml` (mới)
-File dùng chung (chỉ sửa phần được chỉ định): `views/movie.php` → khối `<div class="trailer-modal">`
-
+---
 ### 4.3 Cấu trúc nhánh Git
 
 ```
 main
-├── feature/core              (TV1 - Leader)
-├── feature/user-social        (TV2)
-├── feature/admin-analytics    (TV3)
-├── feature/search-api         (TV4)
-└── feature/ui-mood-seo        (TV5)
+├── feature/core           + feature/search-api     (Gia Huy)
+├── feature/admin-analytics                          (Quốc Huy)
+└── feature/user-social     + feature/ui-mood-seo     (Tấn Huy)
+```
 ```
