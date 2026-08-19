@@ -5,6 +5,16 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
 require_admin();
+$currentPage = isset($_GET['p']) && ctype_digit((string) $_GET['p'])
+    ? max(1, (int) $_GET['p'])
+    : 1;
+$perPage = 10;
+
+$totalMoviesRow = db_select_one('SELECT COUNT(*) AS total FROM movies');
+$totalMovies = (int) ($totalMoviesRow['total'] ?? 0);
+$totalPages = max(1, (int) ceil($totalMovies / $perPage));
+$currentPage = min($currentPage, $totalPages);
+$offset = ($currentPage - 1) * $perPage;
 
 $sql = "
     SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ', ') AS genre_names
@@ -13,14 +23,18 @@ $sql = "
     LEFT JOIN genres g ON mg.genre_id = g.id
     GROUP BY m.id
     ORDER BY m.id DESC
+    LIMIT {$perPage} OFFSET {$offset}
 ";
 $movies = db_select($sql);
 
 require_once '../includes/header.php';
 ?>
 <div class="container admin-container" style="max-width: 1200px; margin: 30px auto; padding: 0 15px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2>Quản lý phim</h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 12px; flex-wrap: wrap;">
+        <div>
+            <h2 style="margin-bottom: 6px;">Quản lý phim</h2>
+            <p style="margin: 0; color: #8c93a8; font-size: 14px;">Tổng cộng <?php echo $totalMovies; ?> phim · Trang <?php echo $currentPage; ?>/<?php echo $totalPages; ?></p>
+        </div>
         <a href="movie_add.php" class="btn btn-primary" style="padding: 8px 16px; background: #e50914; color: #fff; text-decoration: none; border-radius: 4px; font-weight: bold;">+ Thêm phim mới</a>
     </div>
 
@@ -44,12 +58,11 @@ require_once '../includes/header.php';
                 <?php else: ?>
                     <?php foreach ($movies as $movie): ?>
                         <tr style="border-bottom: 1px solid #1c202d;">
-                            <!-- Xử lý hiển thị Poster mượt mà, không bị vỡ khung -->
                             <td style="padding: 12px 16px;">
                                 <?php if (!empty($movie['poster_path'])): ?>
-                                    <img 
-                                        src="../assets/images/posters/<?php echo e($movie['poster_path']); ?>" 
-                                        alt="Poster" 
+                                    <img
+                                        src="../assets/images/posters/<?php echo e($movie['poster_path']); ?>"
+                                        alt="Poster"
                                         style="width: 50px; height: 70px; object-fit: cover; border-radius: 4px; display: block; background: #1f2430;"
                                         onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'width:50px;height:70px;background:#1e222d;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#666;\'>Trống</div>';"
                                     >
@@ -63,29 +76,24 @@ require_once '../includes/header.php';
                             <td style="padding: 12px 16px; font-weight: 600; color: #fff;">
                                 <?php echo e($movie['title']); ?>
                             </td>
-                            
+
                             <td style="padding: 12px 16px; color: #a0a6b5;">
                                 <?php echo e((string)($movie['release_year'] ?? '—')); ?>
                             </td>
-                            
+
                             <td style="padding: 12px 16px; color: #f5c518; font-weight: bold;">
                                 ⭐ <?php echo e((string)($movie['rating'] ?? '0')); ?>
                             </td>
-                            
+
                             <td style="padding: 12px 16px; color: #8e95a5; font-size: 13px; line-height: 1.4;">
                                 <?php echo e($movie['genre_names'] ?? 'Chưa phân loại'); ?>
                             </td>
 
-                            <!-- Cố định 2 nút Sửa và Xóa nằm ngang nhau -->
                             <td style="padding: 12px 16px; text-align: center; white-space: nowrap;">
                                 <div style="display: inline-flex; align-items: center; gap: 12px;">
-                                    <a href="movie_edit.php?id=<?php echo (int) $movie['id']; ?>" style="color: #3b82f6; text-decoration: none; font-size: 14px; font-weight: 500;">
-                                        Sửa
-                                    </a>
+                                    <a href="movie_edit.php?id=<?php echo (int) $movie['id']; ?>" style="color: #3b82f6; text-decoration: none; font-size: 14px; font-weight: 500;">Sửa</a>
                                     <span style="color: #333;">|</span>
-                                    <a href="movie_delete.php?id=<?php echo (int) $movie['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa phim \'<?php echo addslashes($movie['title']); ?>\' không?');" style="color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 500;">
-                                        Xóa
-                                    </a>
+                                    <a href="movie_delete.php?id=<?php echo (int) $movie['id']; ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa phim '<?php echo addslashes($movie['title']); ?>' không?');" style="color: #ef4444; text-decoration: none; font-size: 14px; font-weight: 500;">Xóa</a>
                                 </div>
                             </td>
                         </tr>
@@ -94,5 +102,7 @@ require_once '../includes/header.php';
             </tbody>
         </table>
     </div>
+
+    <?php render_pagination($totalMovies, $currentPage, $perPage, 'admin/movies.php'); ?>
 </div>
 <?php require_once '../includes/footer.php'; ?>
