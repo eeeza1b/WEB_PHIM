@@ -7,7 +7,7 @@ if (!$movie):
     <section class="container section-block">
         <div class="empty-state">
             <h1>Không tìm thấy phim</h1>
-            <p>Bộ phim bạn tìm có thể đã bị xóa hoặc đường dẫn không chính xác.</p>
+            <p>Bộ phim bạn tìm có thể đã bị xóa hoặc đường dẫn không chính xác</p>
             <a class="button button-primary" href="<?php echo e(base_url('browse')); ?>">Quay lại thư viện</a>
         </div>
     </section>
@@ -16,6 +16,12 @@ if (!$movie):
 endif;
 
 $genres = movie_genres((int) $movie['id']);
+
+// Ghi nhận lượt xem thực tế để các tab Đề cử có dữ liệu theo ngày/mùa/tháng.
+$currentUser = current_user();
+record_movie_view((int) $movie['id'], $currentUser ? (int) $currentUser['id'] : null);
+$userMovieRating = $currentUser ? get_user_movie_rating((int) $movie['id'], (int) $currentUser['id']) : null;
+$userRatingSummary = get_movie_user_rating_summary((int) $movie['id']);
 
 // Ưu tiên lấy link Trailer từ cột trailer_url do Admin nhập, nếu không có mới tìm theo tmdb_id
 $youtubeEmbedUrl = null;
@@ -74,6 +80,33 @@ if (is_logged_in()) {
                 </div>
             <?php endif; ?>
 
+            <div class="movie-user-rating">
+                <div class="movie-user-rating__summary">
+                    <strong>Đánh giá của người xem</strong>
+                    <?php if ($userRatingSummary['count'] > 0): ?>
+                        <span>★ <?php echo e(number_format((float) $userRatingSummary['average'], 1)); ?>/5 · <?php echo (int) $userRatingSummary['count']; ?> lượt đánh giá</span>
+                    <?php else: ?>
+                        <span>Chưa có lượt đánh giá</span>
+                    <?php endif; ?>
+                </div>
+                <?php if (is_logged_in()): ?>
+                    <form action="<?php echo e(base_url('actions/movie_rating.php')); ?>" method="POST" class="movie-rating-form">
+                        <?php echo csrf_field(); ?>
+                        <input type="hidden" name="movie_id" value="<?php echo (int) $movie['id']; ?>">
+                        <input type="hidden" name="redirect_to" value="<?php echo e($_SERVER['REQUEST_URI']); ?>">
+                        <div class="star-rating" role="radiogroup" aria-label="Đánh giá phim từ 1 đến 5 sao">
+                            <?php for ($star = 5; $star >= 1; $star--): ?>
+                                <input type="radio" id="movie-rating-<?php echo $star; ?>" name="rating" value="<?php echo $star; ?>" <?php echo $userMovieRating === $star ? 'checked' : ''; ?>>
+                                <label for="movie-rating-<?php echo $star; ?>" title="<?php echo $star; ?> sao">★</label>
+                            <?php endfor; ?>
+                        </div>
+                        <button type="submit" class="button button-ghost button-small"><?php echo $userMovieRating ? 'Cập nhật đánh giá' : 'Đánh giá'; ?></button>
+                    </form>
+                <?php else: ?>
+                    <a class="movie-user-rating__login" href="<?php echo e(base_url('login')); ?>">Đăng nhập để đánh giá</a>
+                <?php endif; ?>
+            </div>
+
             <div class="detail-actions" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                 <?php if ($youtubeEmbedUrl): ?>
                     <button class="button button-primary js-open-trailer"
@@ -114,3 +147,51 @@ if (is_logged_in()) {
         <div id="trailer-modal-body" class="trailer-modal__body"></div>
     </div>
 </div>
+
+<?php
+// Gợi ý phim cùng thể loại, hiển thị ngay dưới phần chi tiết/trailer.
+$relatedPage = isset($_GET['p']) && ctype_digit((string) $_GET['p']) ? (int) $_GET['p'] : 1;
+$relatedPage = max(1, $relatedPage);
+$relatedPerPage = 20;
+$relatedTotal = count_related_movies((int) $movie['id']);
+$relatedMovies = $relatedTotal > 0
+    ? get_related_movies((int) $movie['id'], $relatedPage, $relatedPerPage)
+    : [];
+$relatedPages = max(1, (int) ceil($relatedTotal / $relatedPerPage));
+if ($relatedPage > $relatedPages) {
+    $relatedPage = $relatedPages;
+    $relatedMovies = get_related_movies((int) $movie['id'], $relatedPage, $relatedPerPage);
+}
+?>
+
+<?php if ($relatedTotal > 0): ?>
+    <section id="related-movies" class="container section-block related-movies-section">
+        <div class="section-heading related-movies-heading">
+            <div>
+                <p class="eyebrow">GỢI Ý CHO BẠN</p>
+                <h2>Có thể bạn cũng thích</h2>
+                <p>Các bộ phim có cùng thể loại với <strong><?php echo e($movie['title']); ?></strong>.</p>
+            </div>
+        </div>
+
+        <div class="related-carousel" data-related-carousel>
+            <button class="related-carousel__arrow related-carousel__arrow--prev" type="button" data-related-prev aria-label="Phim đề xuất trước">‹</button>
+            <div class="related-carousel__viewport" data-related-viewport>
+                <?php render_movie_grid($relatedMovies); ?>
+            </div>
+            <button class="related-carousel__arrow related-carousel__arrow--next" type="button" data-related-next aria-label="Phim đề xuất tiếp theo">›</button>
+        </div>
+
+        <?php
+        render_pagination(
+            $relatedTotal,
+            $relatedPage,
+            $relatedPerPage,
+            'movie',
+            ['id' => (int) $movie['id']]
+        );
+        ?>
+    </section>
+<?php endif; ?>
+
+<?php render_comment_block((int) $movie['id'], 'comments'); ?>

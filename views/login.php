@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user = attempt_login($username, $password);
     if ($user) {
-        login_user($user);
+        $remember = !empty($_POST['remember']);
+        login_user($user, $remember);
         header('Location: ' . base_url('index.php'));
         exit;
     } else {
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label style="color: #9ca3af; display: flex; align-items: center; gap: 8px; cursor: pointer;">
                     <input type="checkbox" name="remember" style="accent-color: #eab308; cursor: pointer;"> Ghi nhớ tôi
                 </label>
-                <a href="#" style="color: #9ca3af; text-decoration: none;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='#9ca3af';">Quên mật khẩu?</a>
+                <a href="<?php echo e(base_url('index.php?page=forgot_password')); ?>" style="color: #9ca3af; text-decoration: none;" onmouseover="this.style.color='#fff';" onmouseout="this.style.color='#9ca3af';">Quên mật khẩu?</a>
             </div>
 
             <!-- Nút Đăng nhập -->
@@ -97,8 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Nút Đăng nhập Google -->
         <a 
-            href="#" 
-            onclick="alert('Chức năng Google OAuth cần cấu hình API Key trên Google Cloud Console!'); return false;"
+            href="<?php echo e(base_url('actions/google_login.php')); ?>"
             style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-sizing: border-box; padding: 11px; background: #ffffff; border-radius: 8px; text-decoration: none; color: #1f2937; font-size: 14px; font-weight: 600; transition: 0.2s;"
             onmouseover="this.style.background='#f3f4f6';"
             onmouseout="this.style.background='#ffffff';"
