@@ -1,40 +1,38 @@
 <?php
 // Bản đồ ánh xạ tâm trạng -> thể loại tương ứng
+// LƯU Ý: tên thể loại phải khớp CHÍNH XÁC với cột `genres.name` trong database
+// (đa số phim được gắn thẻ bằng tên tiếng Việt có tiền tố "Phim ...", các tên
+// tiếng Anh như "Drama"/"Animation" hầu như không có phim nào dùng tới).
 $moodDictionary = [
     'happy' => [
         'id'     => 1,
         'title'  => 'Vui vẻ & Yêu đời',
-        'icon'   => '😊',
-        'desc'   => 'Những bộ phim hài hước, hoạt hình tươi sáng mang lại nhiều năng lượng tích cực.',
-        'genres' => ['Hài', 'Hài Hước', 'Hoạt Hình', 'Gia Đình', 'Comedy', 'Animation', 'Family']
+        'desc'   => 'Những bộ phim hài hước, hoạt hình tươi sáng mang lại nhiều năng lượng tích cực',
+        'genres' => ['Phim Hài', 'Phim Hoạt Hình', 'Phim Gia Đình']
     ],
     'relaxing' => [
         'id'     => 2,
         'title'  => 'Thư giãn & Nhẹ nhàng',
-        'icon'   => '🌿',
-        'desc'   => 'Những thước phim êm dịu, phong cảnh tuyệt đẹp giúp bạn thả lỏng tâm trí.',
-        'genres' => ['Phiêu Lưu', 'Tài Liệu', 'Âm Nhạc', 'Adventure', 'Documentary', 'Music']
+        'desc'   => 'Những thước phim êm dịu, phong cảnh tuyệt đẹp giúp bạn thả lỏng tâm trí',
+        'genres' => ['Phim Phiêu Lưu', 'Phim Tài Liệu', 'Phim Nhạc', 'Phim Gia Đình']
     ],
     'romantic' => [
         'id'     => 3,
         'title'  => 'Lãng mạn & Ngọt ngào',
-        'icon'   => '💖',
-        'desc'   => 'Những câu chuyện tình yêu say đắm, sâu sắc chạm đến từng cung bậc cảm xúc.',
-        'genres' => ['Lãng Mạn', 'Tình Cảm', 'Tâm Lý', 'Romance', 'Drama']
+        'desc'   => 'Những câu chuyện tình yêu say đắm, sâu sắc chạm đến từng cung bậc cảm xúc',
+        'genres' => ['Phim Lãng Mạn', 'Romance']
     ],
     'sad' => [
         'id'     => 4,
         'title'  => 'Trầm lắng & Chiêm nghiệm',
-        'icon'   => '🌧️',
-        'desc'   => 'Những bộ phim giàu tính nhân văn, sâu lắng và nhiều khoảng lặng.',
-        'genres' => ['Chính Kịch', 'Tâm Lý', 'Drama']
+        'desc'   => 'Những bộ phim giàu tính nhân văn, sâu lắng và nhiều khoảng lặng',
+        'genres' => ['Phim Chính Kịch', 'Phim Lịch Sử', 'Phim Chiến Tranh']
     ],
     'thrilling' => [
         'id'     => 5,
         'title'  => 'Kịch tính & Hồi hộp',
-        'icon'   => '⚡',
-        'desc'   => 'Những pha hành động dồn dập, giật gân, bí ẩn khiến bạn không thể rời mắt.',
-        'genres' => ['Hành Động', 'Kinh Dị', 'Giật Gân', 'Bí Ẩn', 'Khoa Học Viễn Tưởng', 'Action', 'Horror', 'Thriller', 'Mystery', 'Sci-Fi']
+        'desc'   => 'Những pha hành động dồn dập, giật gân, bí ẩn khiến bạn không thể rời mắt',
+        'genres' => ['Phim Hành Động', 'Phim Kinh Dị', 'Phim Gây Cấn', 'Phim Bí Ẩn', 'Phim Khoa Học Viễn Tưởng', 'Phim Hình Sự']
     ]
 ];
 
@@ -92,7 +90,7 @@ $sql = "
     )
     GROUP BY m.id
     ORDER BY m.rating DESC, m.id DESC
-    LIMIT 20
+    LIMIT 10
 ";
 
 $movies = db_select($sql, $genreList);
@@ -106,7 +104,7 @@ if (empty($movies)) {
         LEFT JOIN genres g ON mg.genre_id = g.id
         GROUP BY m.id
         ORDER BY m.rating DESC
-        LIMIT 12
+        LIMIT 10
     ");
 }
 ?>
@@ -118,7 +116,7 @@ if (empty($movies)) {
         <?php foreach ($moodDictionary as $key => $mood): ?>
             <a href="<?php echo e(base_url('mood') . '?mood=' . $key); ?>" 
                style="padding: 9px 20px; border-radius: 25px; text-decoration: none; font-size: 14px; font-weight: 600; transition: 0.2s; <?php echo $key === $moodParam ? 'background: #eab308; color: #000;' : 'background: #18191c; border: 1px solid #2e3036; color: #9ca3af;'; ?>">
-                <?php echo $mood['icon'] . ' ' . $mood['title']; ?>
+                <?php echo $mood['title']; ?>
             </a>
         <?php endforeach; ?>
     </div>
@@ -129,7 +127,7 @@ if (empty($movies)) {
             Gợi ý theo cảm xúc
         </div>
         <h2 style="color: #ffffff; font-size: 26px; margin: 0 0 10px 0;">
-            <?php echo $activeMood['icon'] . ' ' . $activeMood['title']; ?>
+            <?php echo $activeMood['title']; ?>
         </h2>
         <p style="color: #9ca3af; font-size: 14px; margin: 0; max-width: 700px; line-height: 1.6;">
             <?php echo e($activeMood['desc']); ?>
@@ -139,7 +137,7 @@ if (empty($movies)) {
     <!-- Danh sách phim -->
     <?php if (empty($movies)): ?>
         <div style="background: #18191c; border: 1px solid #2a2b2f; border-radius: 12px; text-align: center; padding: 50px 20px;">
-            <p style="color: #8c8f96; font-size: 15px;">Chưa có phim phù hợp với tâm trạng này trong hệ thống.</p>
+            <p style="color: #8c8f96; font-size: 15px;">Chưa có phim phù hợp với tâm trạng này trong hệ thống</p>
         </div>
     <?php else: ?>
         <div class="movie-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 24px;">
@@ -165,14 +163,15 @@ if (empty($movies)) {
                             </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
                             <span style="color: #eab308; font-weight: bold;">
-                                ★ <?php echo e(number_format((float)($movie['rating'] ?? 0), 1)); ?>
+                                ★ <?php echo e(number_format(movie_display_rating($movie), 1)); ?>
                             </span>
                             <span style="color: #6b7280;">
                                 <?php echo e((string)($movie['release_year'] ?? '')); ?>
                             </span>
                         </div>
+                        <div class="movie-view-count">👁 <?php echo number_format(movie_display_views($movie)); ?> lượt xem</div>
                     </div>
                 </div>
             <?php endforeach; ?>
